@@ -45,21 +45,24 @@ int main(int, char **)
     string api_key = "WT***************3TB";
     string secret_key = "Ik**************4vE";
 
-    string reqParam = "api_key=" + api_key + "&order_type=Market&qty=5&side=Buy&symbol=MATICUSDT&time_in_force=GoodTillCancel&timestamp=" + to_string(timestamp);
+    string reqParam = "api_key=" + api_key + "&close_on_trigger=false&order_type=Market&position_idx=0&qty=5&reduce_only=false&side=Buy&symbol=MATICUSDT&time_in_force=GoodTillCancel&timestamp=" + to_string(timestamp);
+
 
     string sign = hmacEncode(reqParam, secret_key);
 
-    string json = "{\"api_key\":\"" + api_key + "\",\"side\"=\"Buy\",\"symbol\"=\"MATICUSDT\",\"order_type\":\"Market\",\"qty\":2,\"time_in_force\":\"GoodTillCancel\",\"timestamp\":" + to_string(timestamp) + " ,\"sign\":\"" + sign + "\"}";
+    reqParam = reqParam + "&sign=" + sign;
+ 
+    string urlStr = "https://api.bybit.com/private/linear/order/create?" + reqParam;
 
-    cout << json << endl;
+    cout << urlStr << endl;
 
     curl = curl_easy_init();
     if (curl)
     {
         // set params
-        curl_easy_setopt(curl, CURLOPT_POST, 1);          // post req
-        curl_easy_setopt(curl, CURLOPT_URL, "https://api.bybit.com/private/linear/order/create"); // url
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
+        curl_easy_setopt(curl, CURLOPT_POST, 1);             // post req
+        curl_easy_setopt(curl, CURLOPT_URL, urlStr.c_str()); // url
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "");
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, false);
 
